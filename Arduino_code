@@ -1,0 +1,162 @@
+// Hao Miao
+// This basic chip design aims to make an alarm clock without a RTC chip.
+// Time in the chip was simulated by the library and code
+// LCD display is nessary
+
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+
+int timea;
+int timeb;
+int prevoustime = 0;
+int houra = 0;
+int mina = 0;
+int hourb = 0;
+int minb = 0;
+
+void setup()
+{
+  lcd.begin(16, 2);
+  lcd.clear();
+  pinMode(13, INPUT);
+  digitalWrite(13, HIGH);
+  pinMode(11, INPUT);
+  digitalWrite(11, HIGH);
+  pinMode(10, INPUT);
+  digitalWrite(10, HIGH);
+   pinMode(8, INPUT);
+  digitalWrite(8, HIGH);
+   pinMode(9, OUTPUT);
+  //define the variables
+  timea = millis()/1000;
+}
+
+void loop()
+{
+  while(digitalRead(8) == LOW)
+  {
+    lcd.setCursor(6,1);
+    lcd.print("Alarm");
+    lcd.setCursor(6,0);
+       if(digitalRead(11) == LOW)
+    {
+     minb++;
+    } 
+    else if (digitalRead(10) == LOW)
+    {
+      hourb++;
+    }
+     lcd.setCursor(6,0);
+  
+  if(hourb < 10)
+  {
+    lcd.print("0");
+    lcd.print(hourb);
+  }
+  else
+  {
+    lcd.print(hourb);
+  }
+    
+    lcd.print(":");
+    
+  if (minb < 10)
+  {
+    lcd.print("0");
+      lcd.print(minb);
+  }
+  else
+  {
+      lcd.print(minb);
+  }
+ if(minb > 59)
+     {
+      hourb++;
+      minb = 0;
+     } 
+     if(hourb > 23)
+     {
+      hourb = 0; 
+     }
+     delay(500);
+     lcd.clear();
+  }
+  
+  if(digitalRead(13) == LOW)
+  {
+    
+    lcd.setCursor(5,1);
+    lcd.print("Set Time");
+    lcd.setCursor(6,0);
+     if(digitalRead(11) == LOW)
+    {
+     mina++;
+    } 
+    else if (digitalRead(10) == LOW)
+    {
+      houra++;
+    }
+    
+
+  }
+  
+      timeb = (millis() / 1000) - timea;
+      if(prevoustime < (timeb - 59))
+      {
+       mina++;
+       prevoustime = timeb;
+      } 
+      
+      if(mina > 59)
+     {
+      houra++;
+      mina = 0;
+     } 
+     
+     if(houra > 23)
+     {
+      houra = 0; 
+     }
+  
+  
+  lcd.setCursor(1,0);
+  
+  if(houra < 10)
+  {
+    lcd.print("0");
+    lcd.print(houra);
+  }
+  else
+  {
+    lcd.print(houra);
+  }
+    
+    lcd.print(":");
+    
+  if (mina < 10)
+  {
+    lcd.print("0");
+      lcd.print(mina);
+  }
+  else
+  {
+      lcd.print(mina);
+  }
+
+
+
+if(hourb == houra && minb == mina && minb != 0)
+{
+  tone(9, 3000, 200);
+  delay(200);
+  noTone(9);
+delay(200);
+}
+else
+{
+    delay(300);
+}
+  lcd.clear();
+
+}
